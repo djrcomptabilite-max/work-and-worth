@@ -1,4 +1,3 @@
-
 const translations = {
 
   fr: {
@@ -112,7 +111,7 @@ const translations = {
     hero_title:"Build. Develop. Grow.",
     hero_text:"Recognized expertise in public works, equipment and project support.",
     hero_services:"Discover our services",
-    hero_quote:"Request a quote",
+    hero_quote:"Request a Quote",
 
     domains:"OUR AREAS",
     solutions:"Solutions adapted to your needs",
@@ -292,6 +291,94 @@ const translations = {
 
 
 /* =========================
+   GITHUB PAGES NAVIGATION
+========================= */
+
+function getSiteBase() {
+
+  /*
+   * GitHub Pages project:
+   * https://djrcomptabilite-max.github.io/work-and-worth/
+   *
+   * إذا تم استعمال الدومين الخاص لاحقًا:
+   * https://workandworth.dz/
+   *
+   * سيتم استعمال المسار الجذري تلقائيًا.
+   */
+
+  if (window.location.hostname.endsWith("github.io")) {
+    return "/work-and-worth/";
+  }
+
+  return "/";
+}
+
+
+function navigateToPage(page) {
+
+  const base = getSiteBase();
+
+  const cleanPage =
+    String(page || "index.html")
+      .replace(/^\/+/, "")
+      .replace(/^work-and-worth\//, "");
+
+  window.location.assign(
+    base + cleanPage
+  );
+}
+
+
+function initNavigation() {
+
+  document.querySelectorAll("a[href]").forEach(link => {
+
+    const href = link.getAttribute("href");
+
+    if (!href) return;
+
+    /*
+     * لا نتدخل في:
+     * mailto:
+     * tel:
+     * http:
+     * https:
+     * #anchors
+     */
+
+    if (
+      href.startsWith("mailto:") ||
+      href.startsWith("tel:") ||
+      href.startsWith("#") ||
+      href.startsWith("http://") ||
+      href.startsWith("https://")
+    ) {
+      return;
+    }
+
+    /*
+     * الروابط الداخلية للموقع
+     */
+
+    const page =
+      href.split("#")[0].split("?")[0];
+
+    if (!page) return;
+
+    link.addEventListener("click", function(event) {
+
+      event.preventDefault();
+
+      navigateToPage(page);
+
+    });
+
+  });
+
+}
+
+
+/* =========================
    LANGUAGE
 ========================= */
 
@@ -301,45 +388,70 @@ function setLang(lang) {
 
   document.documentElement.lang = lang;
 
-  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.documentElement.dir =
+    lang === "ar" ? "rtl" : "ltr";
 
-  document.body.classList.toggle("rtl", lang === "ar");
+  document.body.classList.toggle(
+    "rtl",
+    lang === "ar"
+  );
 
   document.querySelectorAll("[data-i18n]").forEach(el => {
 
     const key = el.dataset.i18n;
 
-    if (Object.prototype.hasOwnProperty.call(t, key)) {
+    if (
+      Object.prototype.hasOwnProperty.call(t, key)
+    ) {
       el.textContent = t[key];
     }
 
   });
 
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
 
-    const key = el.dataset.i18nPlaceholder;
+  document.querySelectorAll(
+    "[data-i18n-placeholder]"
+  ).forEach(el => {
 
-    if (Object.prototype.hasOwnProperty.call(t, key)) {
-      el.setAttribute("placeholder", t[key]);
+    const key =
+      el.dataset.i18nPlaceholder;
+
+    if (
+      Object.prototype.hasOwnProperty.call(t, key)
+    ) {
+      el.setAttribute(
+        "placeholder",
+        t[key]
+      );
     }
 
   });
 
-  document.querySelectorAll("[data-lang-btn]").forEach(button => {
+
+  document.querySelectorAll(
+    "[data-lang-btn]"
+  ).forEach(button => {
+
+    const active =
+      button.dataset.langBtn === lang;
 
     button.classList.toggle(
       "active",
-      button.dataset.langBtn === lang
+      active
     );
 
     button.setAttribute(
       "aria-pressed",
-      button.dataset.langBtn === lang ? "true" : "false"
+      active ? "true" : "false"
     );
 
   });
 
-  localStorage.setItem("ww_lang", lang);
+  localStorage.setItem(
+    "ww_lang",
+    lang
+  );
+
 }
 
 
@@ -349,43 +461,57 @@ function setLang(lang) {
 
 function initMobileMenu() {
 
-  const hamburger = document.querySelector(".hamb");
-  const nav = document.querySelector("header nav");
+  const hamburger =
+    document.querySelector(".hamb");
+
+  const nav =
+    document.querySelector("header nav");
 
   if (!hamburger || !nav) return;
 
-  hamburger.setAttribute("aria-expanded", "false");
-
-  hamburger.addEventListener("click", function (event) {
-
-    event.preventDefault();
-
-    const opened = nav.classList.toggle("open");
-
-    hamburger.setAttribute(
-      "aria-expanded",
-      opened ? "true" : "false"
-    );
-
-  });
+  hamburger.setAttribute(
+    "aria-expanded",
+    "false"
+  );
 
 
-  /* إغلاق القائمة بعد الضغط على أحد الروابط */
+  hamburger.addEventListener(
+    "click",
+    function(event) {
 
-  nav.querySelectorAll("a").forEach(link => {
+      event.preventDefault();
 
-    link.addEventListener("click", function () {
-
-      nav.classList.remove("open");
+      const opened =
+        nav.classList.toggle("open");
 
       hamburger.setAttribute(
         "aria-expanded",
-        "false"
+        opened ? "true" : "false"
       );
 
-    });
+    }
+  );
 
-  });
+
+  nav.querySelectorAll("a").forEach(
+    link => {
+
+      link.addEventListener(
+        "click",
+        function() {
+
+          nav.classList.remove("open");
+
+          hamburger.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -396,23 +522,37 @@ function initMobileMenu() {
 
 function setCurrentPage() {
 
-  const currentFile =
-    window.location.pathname.split("/").pop() || "index.html";
+  let currentFile =
+    window.location.pathname
+      .split("/")
+      .pop();
 
-  document.querySelectorAll("header nav a").forEach(link => {
+  if (!currentFile) {
+    currentFile = "index.html";
+  }
 
-    const href = link.getAttribute("href");
+  document
+    .querySelectorAll("header nav a")
+    .forEach(link => {
 
-    if (!href) return;
+      const href =
+        link.getAttribute("href");
 
-    const linkFile = href.split("/").pop().split("#")[0];
+      if (!href) return;
 
-    link.classList.toggle(
-      "current",
-      linkFile === currentFile
-    );
+      const linkFile =
+        href
+          .split("/")
+          .pop()
+          .split("#")[0]
+          .split("?")[0];
 
-  });
+      link.classList.toggle(
+        "current",
+        linkFile === currentFile
+      );
+
+    });
 
 }
 
@@ -423,21 +563,28 @@ function setCurrentPage() {
 
 function initLanguages() {
 
-  document.querySelectorAll("[data-lang-btn]").forEach(button => {
+  document
+    .querySelectorAll("[data-lang-btn]")
+    .forEach(button => {
 
-    button.addEventListener("click", function (event) {
+      button.addEventListener(
+        "click",
+        function(event) {
 
-      event.preventDefault();
+          event.preventDefault();
+          event.stopPropagation();
 
-      const lang = this.dataset.langBtn;
+          const lang =
+            this.dataset.langBtn;
 
-      if (translations[lang]) {
-        setLang(lang);
-      }
+          if (translations[lang]) {
+            setLang(lang);
+          }
+
+        }
+      );
 
     });
-
-  });
 
 }
 
@@ -448,49 +595,131 @@ function initLanguages() {
 
 function initForms() {
 
-  document.querySelectorAll("form.form").forEach(form => {
+  document
+    .querySelectorAll("form.form")
+    .forEach(form => {
 
-    form.addEventListener("submit", function (event) {
+      /*
+       * إضافة أسماء للحقول تلقائيًا
+       * لأن بعض صفحات HTML لا تحتوي
+       * على name=""
+       */
 
-      event.preventDefault();
+      const inputs =
+        form.querySelectorAll("input");
 
-      const name =
-        form.querySelector('[name="name"]')?.value.trim() || "";
+      if (inputs[0])
+        inputs[0].setAttribute(
+          "name",
+          "name"
+        );
 
-      const company =
-        form.querySelector('[name="company"]')?.value.trim() || "";
+      if (inputs[1])
+        inputs[1].setAttribute(
+          "name",
+          "company"
+        );
 
-      const email =
-        form.querySelector('[name="email"]')?.value.trim() || "";
+      if (inputs[2])
+        inputs[2].setAttribute(
+          "name",
+          "email"
+        );
 
-      const phone =
-        form.querySelector('[name="phone"]')?.value.trim() || "";
+      if (inputs[3])
+        inputs[3].setAttribute(
+          "name",
+          "phone"
+        );
 
-      const message =
-        form.querySelector('[name="message"]')?.value.trim() || "";
+      const textarea =
+        form.querySelector("textarea");
 
-
-      if (!name) {
-        alert("Veuillez saisir votre nom et prénom.");
-        return;
-      }
-
-      if (!email || !email.includes("@")) {
-        alert("Veuillez saisir une adresse e-mail valide.");
-        return;
-      }
-
-      if (!message) {
-        alert("Veuillez préciser votre besoin.");
-        return;
-      }
+      if (textarea)
+        textarea.setAttribute(
+          "name",
+          "message"
+        );
 
 
-      const subject =
-        encodeURIComponent("Work & Worth - Demande");
+      form.addEventListener(
+        "submit",
+        function(event) {
 
-      const body =
-        encodeURIComponent(
+          event.preventDefault();
+
+          const name =
+            form
+              .querySelector('[name="name"]')
+              ?.value
+              .trim() || "";
+
+          const company =
+            form
+              .querySelector('[name="company"]')
+              ?.value
+              .trim() || "";
+
+          const email =
+            form
+              .querySelector('[name="email"]')
+              ?.value
+              .trim() || "";
+
+          const phone =
+            form
+              .querySelector('[name="phone"]')
+              ?.value
+              .trim() || "";
+
+          const message =
+            form
+              .querySelector('[name="message"]')
+              ?.value
+              .trim() || "";
+
+
+          if (!name) {
+
+            alert(
+              "Veuillez saisir votre nom et prénom."
+            );
+
+            return;
+          }
+
+
+          if (
+            !email ||
+            !email.includes("@")
+          ) {
+
+            alert(
+              "Veuillez saisir une adresse e-mail valide."
+            );
+
+            return;
+          }
+
+
+          if (!message) {
+
+            alert(
+              "Veuillez préciser votre besoin."
+            );
+
+            return;
+          }
+
+
+          const subject =
+            encodeURIComponent(
+              "Work & Worth - Demande"
+            );
+
+
+          const body =
+            encodeURIComponent(
 `Nom et prénom : ${name}
 Entreprise : ${company}
 E-mail : ${email}
@@ -498,15 +727,16 @@ Téléphone : ${phone}
 
 Besoin :
 ${message}`
-        );
+            );
 
 
-      window.location.href =
-        `mailto:djerraya.entreprise@hotmail.com?subject=${subject}&body=${body}`;
+          window.location.href =
+            `mailto:djerraya.entreprise@hotmail.com?subject=${subject}&body=${body}`;
+
+        }
+      );
 
     });
-
-  });
 
 }
 
@@ -515,19 +745,24 @@ ${message}`
    INITIALISATION
 ========================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
 
-  const savedLang =
-    localStorage.getItem("ww_lang") || "fr";
+    const savedLang =
+      localStorage.getItem("ww_lang") || "fr";
 
-  setLang(savedLang);
+    setLang(savedLang);
 
-  initMobileMenu();
+    initMobileMenu();
 
-  initLanguages();
+    initLanguages();
 
-  setCurrentPage();
+    setCurrentPage();
 
-  initForms();
+    initNavigation();
 
-});
+    initForms();
+
+  }
+);
