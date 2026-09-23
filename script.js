@@ -1,0 +1,3 @@
+const h=document.querySelector('.hamb');const n=document.querySelector('nav');h?.addEventListener('click',()=>n.classList.toggle('open'));
+const q=document.getElementById('quoteForm');q?.addEventListener('submit',e=>{e.preventDefault();document.getElementById('formMsg').textContent='Votre demande a bien été prise en compte dans cette version de démonstration.';q.reset();});
+const c=document.getElementById('contactForm');c?.addEventListener('submit',e=>{e.preventDefault();document.getElementById('contactMsg').textContent='Votre message a bien été pris en compte dans cette version de démonstration.';c.reset();});
